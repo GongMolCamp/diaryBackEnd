@@ -170,11 +170,11 @@ router.post("/register", async (req, res) => {
 
 // FCM 토큰 저장 엔드포인트
 router.post("/save-fcm-token", authenticateJWT, async (req, res) => {
-  const { token } = req.body;
+  const { fcm_token } = req.body;
   const { id } = req.user; // JWT에서 id 가져오기
-
+  console.log("save fcm");
   try {
-    const [result] = await db.query("UPDATE users SET fcm_token = ? WHERE id = ?", [token, id]);
+    const [result] = await db.query("UPDATE users SET fcm_token = ? WHERE id = ?", [fcm_token, id]);
     if (result.affectedRows > 0) {
       res.status(200).json({ success: true, message: "FCM token saved successfully" });
     } else {
