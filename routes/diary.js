@@ -50,7 +50,6 @@ router.post("/search-diary", async (req, res) => {
 router.post("/edit-search", async (req, res) => {
   const { id } = req.body;
   const query = "SELECT * FROM diarytable WHERE id = ?";
-  console.log("id:", id);
   try {
     const [results] = await db.query(query, [id]); // Promise 기반 사용
     console.log("edit-search result :", results[0]);
@@ -64,18 +63,40 @@ router.post("/edit-search", async (req, res) => {
 //UPDATE
 router.post("/edit-diary", async (req, res) => {
   const { title, id, user_id, content, feeling, privacy, diary_date } = req.body;
-  const query = `UPDATE diarytable SET title = ?, user_id = ?,content = ?, feeling = ?, privacy = ?, diary_date = ? WHERE id = ?`;
+  const query = `UPDATE diarytable SET title = ?, user_id = ?, content = ?, feeling = ?, privacy = ?, diary_date = ? WHERE id = ?`;
 
   try {
     const [results] = await db.query(query, [title, user_id, content, feeling, privacy, diary_date, id]); // Promise 기반 사용
     console.log("edit Results:", results);
+    
     const [result] = await db.query("SELECT * FROM diarytable WHERE id = ?", [id]);
     console.log("edit result :", result[0]);
+
     res.status(200).json(result[0]);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to edit data into diarytable" });
   }
 })
+
+// DELETE 엔드포인트
+router.delete("/delete-diary", async (req, res) => {
+  const { id } = req.body;
+  const query = "DELETE FROM diarytable WHERE id = ?";
+  console.log("delete id:", id);
+  try {
+    const [results] = await db.query(query, [id]);
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: "Diary entry not found" });
+    }
+
+    res.status(200).json({ message: "Diary entry deleted successfully" });
+  } catch (err) {
+    console.error("Database Error:", err);
+    res.status(500).json({ error: "Failed to delete diary entry" });
+  }
+});
+
 
 module.exports = router; 
