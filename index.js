@@ -295,7 +295,6 @@ app.post('/refresh/auth', authenticateJWT, async function (req, res) {
   }
 });
 
-
 app.get("/", (req, res) => {
   res.json(chatgroups);
 });
